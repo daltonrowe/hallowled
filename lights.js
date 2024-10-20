@@ -3,7 +3,9 @@
 import { log, table } from "./index.js";
 
 async function get(url) {
-  const res = await fetch(`http://${process.env.HOST_NODE}${url}`)
+  let host = process.env.HOST_NODE
+
+  const res = await fetch(`http://${host}${url}`)
   return await res.json();
 }
 
@@ -31,8 +33,6 @@ function shuffle(array) {
 }
 
 export default class {
-  host = {}
-  nodes = {}
   ips = []
 
   constructor() {
@@ -49,16 +49,22 @@ export default class {
     return even ? 'lights2' : 'lights1'
   }
 
-  async load() {
-    this.host = await get('/json/state')
-
+  async loadAllNodes() {
     const info = await get('/json/info')
     this.ips.push(info.ip)
 
-    this.nodes = await get('/json/nodes')
+    const nodes = await get('/json/nodes')
 
-    for (const node of this.nodes.nodes) {
+    for (const node of nodes) {
       this.ips.push(node.ip)
+    }
+  }
+
+  async load() {
+    if (process.env.DIRECT_AP_MODE !== 'on') {
+      await this.loadAllNodes();
+    } else {
+      this.ips.push('4.3.2.1')
     }
 
     table(this.ips);
