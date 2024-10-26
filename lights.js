@@ -29,7 +29,7 @@ export default class {
     const info = await get('/json/info')
     this.ips.push(info.ip)
 
-    const nodes = await get('/json/nodes')
+    const { nodes } = await get('/json/nodes')
 
     for (const node of nodes) {
       this.ips.push(node.ip)
