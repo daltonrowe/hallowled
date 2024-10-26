@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import scenes from "./scenes.js"
+import scenes, { background } from "./scenes.js"
 import Audio from './audio.js';
 import Lights from './lights.js';
 import { logo } from './logo.js';
@@ -26,7 +26,9 @@ const sceneNames = Object.keys(scenes)
 let last = Date.now()
 let currentName = sceneNames[0]
 let current = scenes[currentName]
-let currentLength = current.length + gap
+let currentLength = scenes[currentName].length
+let timeUntilNextScene = current.length + gap
+let playingBackground = false
 let running = false;
 
 function pickScene() {
@@ -44,7 +46,18 @@ function setupScene(sceneName) {
   currentLength = current.length + gap
 }
 
+async function playBackground() {
+  playingBackground = true
+  await lights.play({
+    lights: background
+  })
+
+  log(`🌙 Playing background!`);
+}
+
 async function playScene() {
+  playingBackground = false
+
   await lights.play(current)
   if (current.sound) audio.play(current);
 
@@ -58,10 +71,14 @@ setInterval(async () => {
   running = true
 
   const now = Date.now();
+  const since = now - last
 
-  if (now - last > currentLength) {
+  if (since > currentLength) {
+    if (!playingBackground) playBackground()
+  }
+
+  if (since - last > timeUntilNextScene) {
     log('🎃 Changing scene!');
-
     const randScene = pickScene();
     setupScene(randScene);
     playScene();

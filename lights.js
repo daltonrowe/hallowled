@@ -19,34 +19,10 @@ function updateNode(ip, data) {
   })
 }
 
-function shuffle(array) {
-  let currentIndex = array.length;
-
-  while (currentIndex != 0) {
-    let randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-  }
-
-  return array
-}
-
 export default class {
   ips = []
 
   constructor() {
-  }
-
-  effectKey(scene, i) {
-    if (this.ips.length === 1)
-      return 'lights1'
-
-    if (!scene.hasOwnProperty('lights2'))
-      return 'lights1'
-
-    const even = i % 2;
-    return even ? 'lights2' : 'lights1'
   }
 
   async loadAllNodes() {
@@ -73,16 +49,11 @@ export default class {
   async play(scene) {
     const updatePromises = [];
 
-    const shuffledIps = shuffle([...this.ips])
-    console.log(shuffledIps);
+    for (let i = 0; i < this.ips.length; i++) {
+      const ip = this.ips[i]
 
-    for (let i = 0; i < shuffledIps.length; i++) {
-      // if lights2 is present
-      // assign every other wled to it
-      const lightsKey = this.effectKey(scene, i)
-      const ip = shuffledIps[i];
-      log(`Updating ${ip}`)
-      const promise = updateNode(ip, scene[lightsKey])
+      log(`✉️ Updating ${ip}`)
+      const promise = updateNode(ip, scene.lights)
       updatePromises.push(promise)
     }
 
