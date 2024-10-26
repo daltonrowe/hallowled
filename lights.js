@@ -52,7 +52,7 @@ export default class {
     for (let i = 0; i < this.ips.length; i++) {
       const ip = this.ips[i]
 
-      log(`✉️ Updating ${ip}`)
+      log(`🔮 Updating node ${ip}`)
       const promise = updateNode(ip, scene.lights)
       updatePromises.push(promise)
     }

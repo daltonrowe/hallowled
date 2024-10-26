@@ -43,7 +43,8 @@ function setupScene(sceneName) {
 
   currentName = sceneName
   current = scenes[sceneName]
-  currentLength = current.length + gap
+  currentLength = current.length
+  timeUntilNextScene = current.length + gap
 }
 
 async function playBackground() {
@@ -74,14 +75,14 @@ setInterval(async () => {
   const since = now - last
 
   if (since > currentLength) {
-    if (!playingBackground) playBackground()
+    if (!playingBackground) await playBackground()
   }
 
-  if (since - last > timeUntilNextScene) {
+  if (since > timeUntilNextScene) {
     log('🎃 Changing scene!');
     const randScene = pickScene();
     setupScene(randScene);
-    playScene();
+    await playScene();
 
     last = now
   }
