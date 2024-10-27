@@ -13,7 +13,6 @@ export function table() {
   if (process.env.LOG === '1') console.table(...arguments);
 }
 
-
 logo();
 
 const gap = parseInt(process.env.GAP) * 1000
